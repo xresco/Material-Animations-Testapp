@@ -33,8 +33,6 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
 
     private View rootView;
     private GridView productGrid;
-    private Spinner sItems;
-    private  String url="https://www.zalora.com.my/mobile-api/women/clothing";
     private ProgressBar progressBar;
     private String last_url;
     private int page_count=1;
@@ -137,6 +135,9 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        if(query==null || query.equals(""))
+            return false;
+        videos.clear();
         last_url=BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+query;
         makeRequest(last_url);
         return false;
@@ -144,6 +145,9 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        if(newText==null || newText.equals(""))
+            return false;
+        videos.clear();
         last_url=BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+newText;
         makeRequest(last_url);
 
