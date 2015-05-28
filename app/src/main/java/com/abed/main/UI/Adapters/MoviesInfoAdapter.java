@@ -5,7 +5,6 @@ package com.abed.main.UI.Adapters;
 
 import java.util.ArrayList;
 
-import com.abed.main.BuildConfig;
 import com.abed.main.Models.Config_Images;
 import com.abed.main.Models.Configuration;
 import com.abed.main.Models.Video_Metadata;
@@ -13,9 +12,12 @@ import com.abed.main.R;
 
 import com.abed.main.UI.MovieDetailsActivity;
 import com.bumptech.glide.Glide;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +78,7 @@ public class MoviesInfoAdapter extends BaseAdapter {
         //	final TrackModel listModel = trackItems.get(position);
         if (rowView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.product_item_list, parent,false);
+            rowView = inflater.inflate(R.layout.movie_item_list, parent,false);
             viewCache = new ViewCache(rowView);
             rowView.setTag(viewCache);
         } else {
@@ -105,9 +107,15 @@ public class MoviesInfoAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Intent intent=new Intent(context, MovieDetailsActivity.class);
                 Bundle bundle=new Bundle();
-                bundle.putSerializable("movie",items.get(position));
+                bundle.putSerializable("movie", items.get(position));
                 intent.putExtras(bundle);
-                context.startActivity(intent);
+//                context.startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation((Activity)context);
+                if (android.os.Build.VERSION.SDK_INT>= 16)
+                    context.startActivity(intent, options.toBundle());
+                else
+                    context.startActivity(intent);
             }
         });
         return rowView;

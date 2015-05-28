@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -28,13 +29,19 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ItemsFragment extends Fragment implements SearchView.OnQueryTextListener{
+public class ItemsFragment extends Fragment implements SearchView.OnQueryTextListener, AbsListView.OnScrollListener{
 
     private View rootView;
     private GridView productGrid;
     private Spinner sItems;
     private  String url="https://www.zalora.com.my/mobile-api/women/clothing";
     private ProgressBar progressBar;
+    private String last_url;
+    private int page_count=1;
+    private int preLastItem;
+
+    private ArrayList<Video_Metadata> videos;
+    private MoviesInfoAdapter adapter;
     public ItemsFragment() {
     }
 
@@ -49,7 +56,35 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
     {
         progressBar=(ProgressBar)rootView.findViewById(R.id.progress);
         productGrid=(GridView)rootView.findViewById(R.id.productGrid);
-        makeRequest(BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query=game");
+        productGrid.setOnScrollListener(this);
+        last_url=BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query=game";
+        videos=new ArrayList<>();
+        adapter=new MoviesInfoAdapter(getActivity(),videos);
+        productGrid.setAdapter(adapter);
+
+        makeRequest(last_url);
+    }
+
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    }
+
+    @Override
+    public void onScroll(AbsListView lw, final int firstVisibleItem,
+                         final int visibleItemCount, final int totalItemCount) {
+
+
+        final int lastItem = firstVisibleItem + visibleItemCount;
+        if(lastItem == totalItemCount) {
+            if(preLastItem!=lastItem){ //to avoid multiple calls for last item
+                Log.d("URL::",last_url+"&page="+(++page_count));
+                makeRequest(last_url + "&page=" + (++page_count));
+                preLastItem= lastItem;
+            }
+
+        }
+
     }
 
 
@@ -70,9 +105,8 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
             public void onSuccess(JSONObject jsonObject) {
                 progressBar.setVisibility(View.GONE);
                 Page p=new Page(jsonObject);
-                ArrayList<Video_Metadata> videos=p.getResults();
-                MoviesInfoAdapter adapter=new MoviesInfoAdapter(getActivity(),videos);
-                productGrid.setAdapter(adapter);
+                videos.addAll(p.getResults());
+                adapter.notifyDataSetChanged();
             }
             @Override
             public void onFail(String message) {
@@ -92,7 +126,6 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 Configuration.getInstance(jsonObject);
-                Log.d("Success::", Configuration.getInstance(null).getConfigImages().getBase_url());
                 makeRequestWithoutConfiguration(url);
             }
 
@@ -106,13 +139,15 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        makeRequest(BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+query);
+        last_url=BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+query;
+        makeRequest(last_url);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        makeRequest(BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+newText);
+        last_url=BuildConfig.SERVER_DOMAIN + BuildConfig.SEARCH_API + "api_key=" + BuildConfig.API_KEY + "&query="+newText;
+        makeRequest(last_url);
 
         return false;
     }

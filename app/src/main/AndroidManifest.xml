@@ -24,6 +24,16 @@
             android:name=".UI.MovieDetailsActivity"
             android:label="@string/title_activity_movie_details" >
         </activity>
+
+        <activity
+            android:name=".UI.MovieImagesActivity"
+            android:label="@string/title_activity_movie_details" >
+        </activity>
+        <activity
+            android:name=".UI.LargeImageActivity"
+            android:label=""
+            android:theme="@style/TransparentActionBarTheme">
+        </activity>
     </application>
 
 </manifest>

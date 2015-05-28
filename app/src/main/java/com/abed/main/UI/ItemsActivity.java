@@ -3,6 +3,7 @@ package com.abed.main.UI;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,12 +14,14 @@ import android.view.MenuItem;
 import com.abed.main.R;
 
 
-public class ItemsActivity extends ActionBarActivity {
+public class ItemsActivity extends ParentActivity {
 
     ItemsFragment fragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+
         setContentView(R.layout.activity_items);
         fragment=(ItemsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
     }
