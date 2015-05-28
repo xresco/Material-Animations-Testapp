@@ -61,7 +61,6 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
         videos=new ArrayList<>();
         adapter=new MoviesInfoAdapter(getActivity(),videos);
         productGrid.setAdapter(adapter);
-
         makeRequest(last_url);
     }
 
@@ -78,7 +77,6 @@ public class ItemsFragment extends Fragment implements SearchView.OnQueryTextLis
         final int lastItem = firstVisibleItem + visibleItemCount;
         if(lastItem == totalItemCount) {
             if(preLastItem!=lastItem){ //to avoid multiple calls for last item
-                Log.d("URL::",last_url+"&page="+(++page_count));
                 makeRequest(last_url + "&page=" + (++page_count));
                 preLastItem= lastItem;
             }
